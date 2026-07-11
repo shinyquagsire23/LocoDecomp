@@ -1,0 +1,104 @@
+# Original-image addresses for stubbed DATA globals whose name does not already
+# encode one (the DAT_00xxxxxx / g_vtable0xXXXXXX forms do).  Resolved from the
+# live Ghidra DB (symbol -> address) in v556; regenerate the same way if a name
+# changes.  link/gen_stubs.py uses these to lay each stub out at its TRUE offset
+# inside a mirror of the original's 0x477000..0x501000 span, so that stub globals
+# get their real SIZES and keep their real ALIASING (g_RFIndex is g_UIResources
+# +0x18; g_worldBoard is 337172 bytes, not 4).
+g_pDSoundManager         0x004fd3bc
+g_bScrollBarsVisible     0x00485238
+g_cMetricProbeChar       0x0047f06c
+g_dwTextBufSeed          0x0047e4c4
+g_dwTextBufSeed2         0x0047ec74
+g_pDPlaySessionMgr       0x004fd3ac
+g_pGameNetMsgQueueLock   0x004fd394
+g_pGameNetThread         0x004fd398
+g_pGameNetThreadState    0x004fd3a4
+g_pNetManager            0x0048525c
+g_pNetMsgLocalQueueHead  0x004fd3a0
+g_pNetMsgSendQueueHead   0x004fd39c
+g_pNetSettings           0x004fd3a8
+g_szDefaultCardNameMaybe 0x0047ec70
+g_szDefaultDescriptionMaybe 0x0047e4ec
+g_wTextBufSeed2Tail      0x0047ec78
+g_dwGameTick             0x004a99b4
+g_nBBitMask              0x00485290
+g_nGBitMask              0x0048528c
+g_nGreenWidth            0x0048527c
+g_nLiveLocoBitmaps       0x00485254
+g_nRBitMask              0x00485288
+g_nRedShiftPos           0x00485278
+g_nShadowMaskScratch     0x00485248
+g_nSharedPaletteRefCount 0x00485250
+g_nSurfaceFormatTag      0x00485274
+g_pApp                   0x004aa4a0
+g_pDDraw2                0x00485440
+g_pIniFile               0x004a9eec
+g_pInstallPathPrefix     0x004a99c8
+g_pSharedPalette         0x0048524c
+g_wChannelBleedGuardMask 0x00485280
+g_worldBoard             0x004aad08
+g_UIResources            0x004855e8
+g_RFIndex                0x00485600
+DDraw_CreateSurfaceFromFile        0x00401000
+DecorObjMgrMaybe_00485448          0x00485448
+PlacementCursorMaybe_004854c8      0x004854c8
+SelectedObjWidgetMaybe_004852a0    0x004852a0
+g_anDecorCenterBoundsMaybe         0x00478538
+g_bAppMinimizedMaybe               0x004851f0
+g_bBoardScrollFlag                 0x00485210
+g_bCleanExit                       0x00485218
+g_bCmdlineSFlagSet                 0x004a9918
+g_bLabelBlinkToggle                0x00485264
+g_dwCursorSurfaceRefCount          0x004fd3d0
+g_dwScreenBpp                      0x0048521c
+g_dwScreenHalfHeight               0x004851fc
+g_dwScreenHalfWidth                0x004851f8
+g_dwScreenHeight                   0x00485214
+g_dwScreenWidth                    0x004851d8
+g_forcedSeason                     0x00485230
+g_nScreenState                     0x004851f4
+g_pAlbumCardWnd                    0x004fd384
+g_pBackdropDesc                    0x004fd3c8
+g_pBuildToolCursorWnd              0x00485258
+g_pCursorSurface                   0x004fd3cc
+g_pDDraw                           0x004a9908
+g_pDDrawPrimarySurface             0x004fd3c0
+g_pDDrawWorkSurface                0x004fd3c4
+g_pEditCardWnd                     0x004fd380
+g_pLocalPlayerIdentity             0x004aa4a8
+g_pMailWnd                         0x004fd37c
+g_pMenuIconListTailMaybe           0x00485270
+g_pPostBagCache                    0x004fd3b0
+g_pSplashWnd                       0x004fd378
+g_pTutorialWnd                     0x004fd38c
+g_rectAppClientBounds              0x00485220
+g_rectAppWindowBounds              0x00485200
+g_rectScreenBounds                 0x004851e0
+g_screenSaver                      0x004a9910
+g_szRemoteResPath                  0x004a97a8
+g_uLoadingTimerId                  0x004a97a4
+g_worldActionCursor                0x004a9ef0
+# View-struct aliases: several of these deliberately share one address (the
+# lint_alias.py TU-local-view pattern), and the mirror reproduces that for free.
+g_BigObjTrackingSetsAnimPartial     0x004fd220
+g_BuildToolButton                  0x004aa5b8
+g_NetSessionEventQueue             0x004a9990
+g_NetSessionEventQueueEdge         0x004a9990
+g_NetSessionEventQueuePick         0x004a9990
+g_NetSessionEventQueueRoad         0x004a9990
+g_NetSessionEventQueueWander       0x004a9990
+g_PeerTrainSlotQueue               0x004a98b0
+g_PeerTrainSlotQueueEdge           0x004a98b0
+g_aMonthDayOffsetMaybe             0x0047e410
+g_bDisplayChangeMsgUpMaybe         0x004ff138
+g_bSizeMoveInProgressMaybe         0x004ff13c
+g_easterEggMgrMaybe                0x004a99b0
+g_gameWindowWidgetList             0x004a9994
+g_nDecorCategory7CountMaybe        0x004854a0
+g_nEasterLocaleId                  0x004a97a0
+g_nNearRightEdgeThresholdMaybe     0x004aa5c8
+g_pActiveTabWidgetMaybe            0x004fd3e0
+g_pPostBagFileCache                0x004fd3b4
+g_szScratchText                    0x004851d0
+DecorCategoryMgrMaybe_00485494     0x00485494

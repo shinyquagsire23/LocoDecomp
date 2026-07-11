@@ -1,0 +1,30 @@
+#!/bin/bash
+# Wrapper: invoke VC++ 5.0 LINK.EXE under CrossOver wine.
+# Mirrors bin/cl: sets LIB to the VC lib dir, converts existing-file args to Z:\ paths.
+#
+# Ported from Yodecomp/toolchain/bin/link (VC++ 4.2 -> VC++ 5.0, vc42 -> vc50). Yoda's
+# link wrapper set LIB to both VC/LIB and VC/MFC/LIB for static-MFC linkage; Loco has no
+# MFC (CLAUDE.md: plain Win32, no NAFXCW import) so there is no MFC/LIB to add here.
+set -uo pipefail
+HERE="$(cd "$(dirname "$0")/.." && pwd)"
+VC="${VCDIR:-$HERE/vc50sp3}"     # VCDIR env override lets us A/B-test a candidate VC 5.0 build
+# ⭐ DEFAULT IS SP3, not RTM (v358). vc50sp3/ overlays the Visual Studio 97 SP3 c1/c1xx/c2/
+# link and symlinks RTM's INCLUDE/LIB, so both trees must be present. RTM's c2 emits the
+# WRONG 3-byte code-alignment filler (`nop; mov edi,edi` where the shipped exe has
+# `lea ecx,[ecx+0]`) -- a whole-image constant, and worth 9 byte-matches on its own.
+# A/B the other way with VCDIR=$HERE/vc50.
+export WINEDEBUG="${WINEDEBUG:--all}"
+export WINEPREFIX="${WINEPREFIX:-$HOME/.wine}"
+wineserver -p 2>/dev/null || true
+winp(){ printf 'Z:%s' "$(printf '%s' "$1" | sed 's#/#\\#g')"; }
+export LIB="$(winp "$VC/LIB")"
+args=()
+for a in "$@"; do
+  if [[ -e "$a" ]]; then
+    abs="$(cd "$(dirname "$a")" && pwd)/$(basename "$a")"
+    args+=("$(winp "$abs")")
+  else
+    args+=("$a")
+  fi
+done
+exec wine "$VC/BIN/LINK.EXE" "${args[@]:-}"

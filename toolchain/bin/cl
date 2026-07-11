@@ -1,0 +1,35 @@
+#!/bin/bash
+# Wrapper: invoke VC++ 5.0 CL.EXE under CrossOver wine.
+# Passes cl options through untouched; converts existing-file/dir args to Z:\ windows paths.
+#
+# Ported from Yodecomp/toolchain/bin/cl (same wine-wrapper pattern, VC++ 4.2 -> VC++ 5.0):
+# only VCDIR's default target directory changed (vc42 -> vc50). Loco has no MFC
+# (CLAUDE.md), so unlike Yoda's wrapper this does not add MFC/INCLUDE or MFC/LIB to
+# INCLUDE/LIB — plain Win32 headers/libs only.
+set -uo pipefail
+HERE="$(cd "$(dirname "$0")/.." && pwd)"
+VC="${VCDIR:-$HERE/vc50sp3}"     # VCDIR env override lets us A/B-test a candidate VC 5.0 build
+# ⭐ DEFAULT IS SP3, not RTM (v358). vc50sp3/ overlays the Visual Studio 97 SP3 c1/c1xx/c2/
+# link and symlinks RTM's INCLUDE/LIB, so both trees must be present. RTM's c2 emits the
+# WRONG 3-byte code-alignment filler (`nop; mov edi,edi` where the shipped exe has
+# `lea ecx,[ecx+0]`) -- a whole-image constant, and worth 9 byte-matches on its own.
+# A/B the other way with VCDIR=$HERE/vc50.
+export WINEDEBUG="${WINEDEBUG:--all}"
+export WINEPREFIX="${WINEPREFIX:-$HOME/.wine}"
+# Pre-warm a persistent wineserver so back-to-back CL invocations skip the multi-second cold
+# start (wineserver otherwise exits ~3s after its last client). Near-instant no-op once one is
+# already persistent; uses the same `wineserver` resolved from PATH as the `wine` below.
+wineserver -p 2>/dev/null || true
+winp(){ printf 'Z:%s' "$(printf '%s' "$1" | sed 's#/#\\#g')"; }
+export INCLUDE="$(winp "$VC/INCLUDE")"
+export LIB="$(winp "$VC/LIB")"
+args=()
+for a in "$@"; do
+  if [[ -e "$a" ]]; then
+    abs="$(cd "$(dirname "$a")" && pwd)/$(basename "$a")"
+    args+=("$(winp "$abs")")
+  else
+    args+=("$a")
+  fi
+done
+exec wine "$VC/BIN/CL.EXE" "${args[@]:-}"

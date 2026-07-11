@@ -1,0 +1,7 @@
+; SMOKE-TEST SCAFFOLDING ONLY -- import library for MSVFW32.dll (Microsoft
+; Video for Windows), not shipped in the VC5 retail LIB dir. The original
+; Loco.exe imports MCIWndRegisterClass by name (hint 44). Built by
+; tools/link_check.sh via LINK /LIB /DEF.
+LIBRARY MSVFW32
+EXPORTS
+    MCIWndRegisterClass

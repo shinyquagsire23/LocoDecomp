@@ -1,0 +1,40 @@
+#!/bin/sh
+# pre-commit — gate every commit on the repo's linters (see CLAUDE.md,
+# "Standing rules" + "SESSION PROTOCOL" step 4).
+#
+# Installed via:  git config core.hooksPath tools/githooks
+# (local config — re-run once per fresh clone.)
+#
+# Gates (both hard-fail the commit):
+#   1. tools/lint_idiom.py        — UNTAGGED non-idiomatic findings
+#   2. tools/lint_ghidra_sync.py  — UNTAGGED src<->Ghidra name desyncs;
+#      --strict makes an unreachable Ghidra server a failure too, so the
+#      check can't be skipped by simply not having Ghidra running.
+# tools/lint_names.py is informational (burn-down tracker) — printed, never fails.
+#
+# Bypass (emergencies only — say why in the commit message):
+#   git commit --no-verify
+
+cd "$(git rev-parse --show-toplevel)" || exit 1
+
+echo "[pre-commit] tools/lint_idiom.py"
+if ! python3 tools/lint_idiom.py; then
+    echo ""
+    echo "pre-commit: BLOCKED by lint_idiom.py — model the struct field, or tag"
+    echo "genuinely parked debt '// TODO: idiom' (A/B/C need a real fix or TODO tag)."
+    exit 1
+fi
+
+echo "[pre-commit] tools/lint_ghidra_sync.py --strict"
+if ! python3 tools/lint_ghidra_sync.py --strict; then
+    echo ""
+    echo "pre-commit: BLOCKED by lint_ghidra_sync.py — fix the rename drift on"
+    echo "whichever side (src or Ghidra) is stale, or tag parked debt '// TODO: sync'."
+    echo "If Ghidra itself is unreachable: start ghidra-mcp with Loco.exe open."
+    exit 1
+fi
+
+echo "[pre-commit] tools/lint_names.py (informational)"
+python3 tools/lint_names.py 2>/dev/null | tail -1
+
+exit 0

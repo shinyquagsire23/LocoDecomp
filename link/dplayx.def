@@ -1,0 +1,26 @@
+; SMOKE-TEST SCAFFOLDING ONLY -- import library for DPLAYX.dll, which the VC5
+; retail LIB dir does not ship (DirectX SDK component). The original Loco.exe
+; imports both by ordinal: 1 = DirectPlayCreate (12 bytes of args),
+; 4 = DirectPlayLobbyCreateA (20 bytes of args). Names are stdcall-decorated
+; so LIB emits the _name@N / __imp__name@N import symbols our objs reference.
+; Built by tools/link_check.sh via LINK /LIB /DEF.
+;
+; These two were SWAPPED here until v559, and the swap was invisible to every
+; lint and to the byte-match (an import is a relocation, which match.py masks).
+; It only surfaced at runtime, as a NULL-deref one instruction after the
+; DirectPlayLobbyCreateA call in GNetManager::CreateLobby (0x45e4b0): bound to
+; ordinal 1 the call actually entered DirectPlayCreate, which never writes the
+; out-pointer, so the very next `mov edx,[eax]` read address 0.
+;
+; Ground truth, both sides agreeing:
+;   * the original's DPLAYX FirstThunk is rva 0x77024, and objdump -p lists its
+;     ILT as ordinal 4 then ordinal 1 -- so slot 0x477024 IS ordinal 4 and slot
+;     0x477028 is ordinal 1. CreateLobby's DirectPlayLobbyCreateA reaches
+;     `jmp ds:0x477024` (thunk 0x4637d2), i.e. ordinal 4; DirectPlayCreate
+;     reaches `jmp ds:0x477028` (thunk 0x4637d8), i.e. ordinal 1.
+;   * wine's own dplayx.dll exports DirectPlayCreate at ordinal 1 and
+;     DirectPlayLobbyCreateA at ordinal 4, matching the retail DLL it clones.
+LIBRARY DPLAYX
+EXPORTS
+    DirectPlayCreate@12        @1  NONAME
+    DirectPlayLobbyCreateA@20  @4  NONAME
