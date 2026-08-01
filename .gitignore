@@ -15,3 +15,7 @@ link/gen_syms_port.txt
 link/gen_stubs_port.obj
 link/stubs_port.obj
 link/Loco-port.map
+
+*.pdb
+/backtrace.txt
+/backtrace2.txt
